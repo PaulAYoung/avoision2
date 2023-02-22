@@ -1,4 +1,4 @@
-use bevy::{prelude::*, ecs::bundle};
+use bevy::prelude::*;
 
 use crate::components;
 
