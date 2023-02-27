@@ -13,7 +13,7 @@ pub struct Avoidee;
 pub struct Avoider;
 
 #[derive(Component, Deref, DerefMut, Default)]
-pub struct Momentum(Vec2);
+pub struct Momentum(pub Vec2);
 
 
 #[derive(Component)]

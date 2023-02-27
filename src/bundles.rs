@@ -1,27 +1,28 @@
 use bevy::prelude::*;
+use bevy::sprite::MaterialMesh2dBundle;
 
 use crate::components;
 
 #[derive(Bundle, Default)]
 pub struct PhysEntity{
-    momentum: components::Momentum,
-    collider: components::Collider,
+    pub momentum: components::Momentum,
+    pub collider: components::Collider,
 }
 
 #[derive(Bundle, Default)]
 pub struct Avoidee{
-    avoidee: components::Avoidee,
+    pub avoidee: components::Avoidee,
     #[bundle]
-    physics:PhysEntity,
+    pub physics:PhysEntity,
     #[bundle]
-    sprite: SpriteBundle,
+    pub mesh: MaterialMesh2dBundle<ColorMaterial>,
 }
 
 #[derive(Bundle, Default)]
 pub struct Avoider{
-    avoidee: components::Avoider,
+    pub avoidee: components::Avoider,
     #[bundle]
-    physics:PhysEntity,
+    pub physics:PhysEntity,
     #[bundle]
-    sprite: SpriteBundle,
+    pub mesh: MaterialMesh2dBundle<ColorMaterial>,
 }
