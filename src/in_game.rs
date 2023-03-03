@@ -1,6 +1,6 @@
 use bevy::{prelude::*, sprite::MaterialMesh2dBundle};
 
-use crate::{bundles::{self, PhysEntity}, components::{Momentum}};
+use crate::{bundles::{self, PhysEntity}, components::{Momentum, Collider}, systems::physics::collisions};
 use crate::GameState;
 use crate::systems;
 pub struct InGame;
@@ -16,6 +16,7 @@ impl Plugin for InGame {
             SystemSet::on_update(GameState::InGame)
                 .with_system(apply_momentum)
                 .with_system(systems::controls::player_controls)
+                .with_system(collisions)
         );
     }
 }
@@ -34,6 +35,7 @@ fn spawn_avoidee(
         },
         physics: PhysEntity{
             momentum: Momentum(Vec2 { x:10., y: 10. }),
+            collider: Collider::Circle { radius: 10. },
             ..Default::default()
         },
         ..Default::default()
@@ -49,10 +51,15 @@ fn spawn_avoider(
         mesh: MaterialMesh2dBundle{
             mesh: meshes.add(shape::Circle::new(10.).into()).into(),
             material: materials.add(ColorMaterial::from(Color::BLUE)),
+            transform: Transform{
+                translation: Vec3 { x: 20., y: 20., z: 0. },
+                ..Default::default()
+            },
             ..Default::default()
         },
         physics: PhysEntity{
             momentum: Momentum(Vec2 { x:10., y: 10. }),
+            collider: Collider::Circle { radius: 10. },
             ..Default::default()
         },
         ..Default::default()
