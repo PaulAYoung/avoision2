@@ -24,10 +24,8 @@ pub fn collisions(
         let (p1, p2) = (t1.translation.truncate(), t2.translation.truncate());
         if collides(&c1, &c2, &p1, &p2){
             let m_mod = (p1-p2).normalize()*10.;
-            m1.x += m_mod.x;
-            m1.y += m_mod.y;
-            m2.x -= m_mod.x;
-            m2.y -= m_mod.y;
+            m1.0 = m1.0 + m_mod;
+            m2.0 = m2.0 - m_mod;
         }
     }
 }
