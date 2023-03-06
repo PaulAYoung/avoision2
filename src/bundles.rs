@@ -7,6 +7,7 @@ use crate::components;
 pub struct PhysEntity{
     pub momentum: components::Momentum,
     pub collider: components::Collider,
+    pub mass: components::Mass,
 }
 
 #[derive(Bundle, Default)]

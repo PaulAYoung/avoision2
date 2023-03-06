@@ -15,6 +15,14 @@ pub struct Avoider;
 #[derive(Component, Deref, DerefMut, Default)]
 pub struct Momentum(pub Vec2);
 
+#[derive(Component, PartialEq)]
+pub struct Mass(pub f32);
+
+impl Default for Mass{
+    fn default() -> Self {
+        Mass(1.)
+    }
+}
 
 #[derive(Component)]
 pub enum Collider{
