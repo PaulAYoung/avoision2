@@ -5,21 +5,23 @@ mod components;
 mod in_game;
 mod systems;
 
-#[derive(Clone, PartialEq, Eq, Debug, Hash)]
+#[derive(States, PartialEq, Eq, Debug, Default, Hash, Clone)]
 enum GameState{
+    #[default]
     InGame,
     Menu,
-    Pause
+    Pause,
 }
 
 fn setup(mut commands: Commands){
+    info!("In setup");
     commands.spawn(Camera2dBundle::default());
 }
 
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
-        .add_state(GameState::InGame)
+        .add_state::<GameState>()
         .add_startup_system(setup)
         .add_plugin(in_game::InGame)
         .run();

@@ -7,16 +7,18 @@ pub struct InGame;
 
 impl Plugin for InGame {
     fn build(&self, app: &mut App) {
-        app.add_system_set(
-            SystemSet::on_enter(GameState::InGame)
-                .with_system(spawn_avoidee)
-                .with_system(spawn_avoider)
+        app.add_systems(
+            (
+                spawn_avoidee,
+                spawn_avoider,
+            ).in_schedule(OnEnter(GameState::InGame))
         )
-        .add_system_set(
-            SystemSet::on_update(GameState::InGame)
-                .with_system(apply_momentum)
-                .with_system(systems::controls::player_controls)
-                .with_system(collisions)
+        .add_systems(
+            (
+                apply_momentum,
+                systems::controls::player_controls,
+                collisions,
+            ).in_set(OnUpdate(GameState::InGame))
         );
     }
 }
@@ -27,6 +29,7 @@ fn spawn_avoidee(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
 ){
+    info!("Spawn avoidee");
     commands.spawn(bundles::Avoidee{
         mesh: MaterialMesh2dBundle{
             mesh: meshes.add(shape::Circle::new(10.).into()).into(),
@@ -47,6 +50,7 @@ fn spawn_avoider(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
 ){
+    info!("Spawning avoider");
     commands.spawn(bundles::Avoider{
         mesh: MaterialMesh2dBundle{
             mesh: meshes.add(shape::Circle::new(10.).into()).into(),
