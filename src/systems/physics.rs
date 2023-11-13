@@ -6,9 +6,25 @@ pub fn collides(c1: &Collider, c2: &Collider, p1:&Vec2, p2: &Vec2)->bool{
     match *c1 {
         Collider::Circle{radius: r} => {
             match *c2{
-                Collider::Circle{radius: r2} => p1.distance(*p2) <= r+r2
+                Collider::Circle{radius: r2} => p1.distance(*p2) <= r+r2,
+                Collider::Line { p1, p2 } => {
+                    true
+                }
             }
         },
+        _ => collides(c2, c1, p2, p1)
+    }
+}
+
+
+pub fn apply_momentum(
+    mut query: Query<(&mut Transform, &Momentum)>,
+    time: Res<Time>
+){
+    let time_mod = time.delta_seconds();
+    for (mut transform, momentum) in query.iter_mut(){
+        transform.translation.x += (momentum.x*time_mod);
+        transform.translation.y += (momentum.y*time_mod);
     }
 }
 

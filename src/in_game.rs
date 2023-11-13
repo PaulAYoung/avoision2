@@ -8,17 +8,19 @@ pub struct InGame;
 impl Plugin for InGame {
     fn build(&self, app: &mut App) {
         app.add_systems(
+            OnEnter(GameState::InGame),
             (
                 spawn_avoidee,
                 spawn_avoider,
-            ).in_schedule(OnEnter(GameState::InGame))
+            )
         )
         .add_systems(
+            Update,
             (
-                apply_momentum,
+                systems::physics::apply_momentum,
                 systems::controls::player_controls,
                 collisions,
-            ).in_set(OnUpdate(GameState::InGame))
+            ).run_if(in_state(GameState::InGame))
         );
     }
 }
@@ -68,15 +70,4 @@ fn spawn_avoider(
         },
         ..Default::default()
     });
-}
-
-fn apply_momentum(
-    mut query: Query<(&mut Transform, &Momentum)>,
-    time: Res<Time>
-){
-    let time_mod = time.delta_seconds();
-    for (mut transform, momentum) in query.iter_mut(){
-        transform.translation.x += (momentum.x*time_mod);
-        transform.translation.y += (momentum.y*time_mod);
-    }
 }

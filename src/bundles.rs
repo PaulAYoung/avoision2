@@ -13,17 +13,13 @@ pub struct PhysEntity{
 #[derive(Bundle, Default)]
 pub struct Avoidee{
     pub avoidee: components::Avoidee,
-    #[bundle]
     pub physics:PhysEntity,
-    #[bundle]
     pub mesh: MaterialMesh2dBundle<ColorMaterial>,
 }
 
 #[derive(Bundle, Default)]
 pub struct Avoider{
     pub avoidee: components::Avoider,
-    #[bundle]
     pub physics:PhysEntity,
-    #[bundle]
     pub mesh: MaterialMesh2dBundle<ColorMaterial>,
 }

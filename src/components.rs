@@ -26,7 +26,8 @@ impl Default for Mass{
 
 #[derive(Component)]
 pub enum Collider{
-    Circle{radius: f32}
+    Circle{radius: f32},
+    Line{p1: Vec2, p2: Vec2},
 }
 
 impl Default for Collider {
