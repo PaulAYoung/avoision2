@@ -3,13 +3,14 @@ use bevy::prelude::*;
 mod bundles;
 mod components;
 mod in_game;
+mod menu;
 mod systems;
 mod physics;
 
 #[derive(States, PartialEq, Eq, Debug, Default, Hash, Clone)]
 enum GameState{
-    #[default]
     InGame,
+    #[default]
     Menu,
     Pause,
 }
@@ -29,6 +30,9 @@ fn main() {
                 setup
             )
         )
-        .add_plugins(in_game::InGame)
+        .add_plugins((
+            in_game::InGame,
+            menu::Menu
+        ))
         .run();
 }
