@@ -1,4 +1,7 @@
-use bevy::prelude::*;
+use bevy::{
+    prelude::*,
+    diagnostic::{LogDiagnosticsPlugin, FrameTimeDiagnosticsPlugin}
+};
 
 mod bundles;
 mod components;
@@ -20,9 +23,25 @@ fn setup(mut commands: Commands){
     commands.spawn(Camera2dBundle::default());
 }
 
+mod constants {
+    pub const SCREEN_HEIGHT:f32 = 300.;
+    pub const SCREEN_WIDTH:f32 = 300.;
+}
+
 fn main() {
     App::new()
-        .add_plugins(DefaultPlugins)
+        .add_plugins((
+            DefaultPlugins.set(WindowPlugin {
+                    primary_window: Some(Window {
+                        title: "Avoision 2".into(),
+                        resolution: (constants::SCREEN_HEIGHT, constants::SCREEN_WIDTH).into(),
+                        ..default()
+                    }),
+                    ..default()
+                }),
+            LogDiagnosticsPlugin::default(),
+            FrameTimeDiagnosticsPlugin,
+        ))
         .add_state::<GameState>()
         .add_systems(
             Startup,

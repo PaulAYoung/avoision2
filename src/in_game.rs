@@ -3,6 +3,7 @@ use bevy::{prelude::*, sprite::MaterialMesh2dBundle};
 use crate::{bundles::{self, PhysEntity}, components::{Momentum, Collider}, systems::physics::collisions};
 use crate::GameState;
 use crate::systems;
+use crate::constants::{SCREEN_HEIGHT, SCREEN_WIDTH};
 pub struct InGame;
 
 impl Plugin for InGame {
@@ -19,6 +20,7 @@ impl Plugin for InGame {
             (
                 systems::physics::apply_momentum,
                 systems::controls::player_controls,
+                loop_space,
                 collisions,
             ).run_if(in_state(GameState::InGame))
         );
@@ -70,4 +72,15 @@ fn spawn_avoider(
         },
         ..Default::default()
     });
+}
+
+fn loop_space(
+    mut query: Query<&mut Transform, With<Momentum>>
+){
+    for mut t in query.iter_mut(){
+        if t.translation.y < -SCREEN_HEIGHT/2. {t.translation.y = SCREEN_HEIGHT/2.;}
+        if t.translation.y > SCREEN_HEIGHT/2. {t.translation.y = -SCREEN_HEIGHT/2.;}
+        if t.translation.x < -SCREEN_WIDTH/2. {t.translation.x = SCREEN_WIDTH/2.;}
+        if t.translation.x > SCREEN_WIDTH/2. {t.translation.x = -SCREEN_WIDTH/2.;}
+    }
 }
