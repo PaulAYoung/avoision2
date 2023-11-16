@@ -39,15 +39,11 @@ fn main() {
                     }),
                     ..default()
                 }),
-            LogDiagnosticsPlugin::default(),
-            FrameTimeDiagnosticsPlugin,
         ))
         .add_state::<GameState>()
         .add_systems(
             Startup,
-            (
-                setup
-            )
+            setup
         )
         .add_plugins((
             in_game::InGame,
