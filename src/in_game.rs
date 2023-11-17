@@ -20,6 +20,15 @@ pub struct InGame;
 #[derive(Resource)]
 pub struct Score(pub Stopwatch);
 
+#[derive(Resource)]
+struct AvoiderSpawnTimer(Timer);
+
+impl Default for AvoiderSpawnTimer{
+    fn default() -> Self {
+        Self(Timer::from_seconds(2., TimerMode::Repeating))
+    }
+}
+
 impl Plugin for InGame {
     fn build(&self, app: &mut App) {
         app
@@ -42,6 +51,7 @@ impl Plugin for InGame {
                 collisions,
                 update_score,
                 game_over_check,
+                spawn_avoidee_timer,
             ).run_if(in_state(GameState::InGame))
         );
     }
@@ -86,6 +96,20 @@ fn spawn_avoidee(
         },
         ..Default::default()
     }));
+}
+
+fn spawn_avoidee_timer(
+    time: Res<Time>,
+    mut spawn_timer: Local<AvoiderSpawnTimer>,
+    mut commands: Commands,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<ColorMaterial>>,
+    query: Query<&Transform, With<Player>>,
+){
+    spawn_timer.0.tick(time.delta());
+    if spawn_timer.0.finished(){
+        spawn_avoidee(commands, meshes, materials, query);
+    }
 }
 
 fn spawn_avoider(
@@ -163,7 +187,7 @@ fn update_score(
 }
 
 fn game_over_check(
-    query: Query<Entity, With<Avoidee>>,
+    query: Query<Entity, With<Player>>,
     mut collision_events: EventReader<CollisionEvent>,
     mut next_state: ResMut<NextState<GameState>>
 ){
