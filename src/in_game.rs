@@ -1,14 +1,24 @@
-use bevy::{prelude::*, sprite::{MaterialMesh2dBundle, collide_aabb::Collision}, time::Stopwatch};
+use std::ops::Range;
 
-use crate::{bundles::{self, PhysEntity}, components::{Momentum, Collider, Avoidee}, systems::physics::{collisions, CollisionEvent}};
+use bevy::{prelude::*, sprite::{MaterialMesh2dBundle, collide_aabb::Collision}, time::Stopwatch, reflect::Array};
+
+use rand::Rng;
+use rand::seq::SliceRandom;
+
+use crate::{bundles::{self, PhysEntity}, components::{Momentum, Collider, Avoidee, ResetMarker, Player}, systems::physics::{collisions, CollisionEvent}};
 use crate::GameState;
 use crate::systems;
 use crate::constants::{SCREEN_HEIGHT, SCREEN_WIDTH};
 
+const AVOIDEE_POS_RANGE_X: Range<f32> = (SCREEN_WIDTH/4.)..(SCREEN_WIDTH/2.);
+const AVOIDEE_POS_RANGE_Y: Range<f32> = (SCREEN_HEIGHT/4.)..(SCREEN_HEIGHT/2.);
+const AVOIDEE_MOMENTUM_RANGE: Range<f32> = (-50.)..(50.);
+const ONE_NEG_ONE: [f32; 2] = [1., -1.];
 pub struct InGame;
 
+
 #[derive(Resource)]
-pub struct Score(Stopwatch);
+pub struct Score(pub Stopwatch);
 
 impl Plugin for InGame {
     fn build(&self, app: &mut App) {
@@ -17,10 +27,10 @@ impl Plugin for InGame {
         .add_systems(
             OnEnter(GameState::InGame),
             (
-                spawn_avoidee,
                 spawn_avoider,
+                spawn_avoidee,
                 spawn_score_text,
-                rest_score,
+                reset_score,
             )
         )
         .add_systems(
@@ -42,21 +52,40 @@ fn spawn_avoidee(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
+    query: Query<&Transform, With<Player>>,
 ){
     info!("Spawn avoidee");
-    commands.spawn(bundles::Avoidee{
+    let mut rng = rand::thread_rng();
+    let t_mod = Vec3 {
+        x: rng.gen_range(AVOIDEE_POS_RANGE_X) * ONE_NEG_ONE.choose(&mut rng).unwrap(),
+        y: rng.gen_range(AVOIDEE_POS_RANGE_Y) * ONE_NEG_ONE.choose(&mut rng).unwrap(),
+        z: 0.
+    };
+    let avoidee_translatioin: Vec3;
+    let avoidee_translation = match query.get_single(){
+        Ok(player) => player.translation + t_mod,
+        _ => t_mod,
+    };
+
+    commands.spawn((
+        ResetMarker,
+        bundles::Avoidee{
         mesh: MaterialMesh2dBundle{
             mesh: meshes.add(shape::Circle::new(10.).into()).into(),
             material: materials.add(ColorMaterial::from(Color::RED)),
+            transform: Transform{
+                translation: avoidee_translation,
+                ..Default::default()
+            },
             ..Default::default()
         },
         physics: PhysEntity{
-            momentum: Momentum(Vec2 { x:10., y: 10. }),
+            momentum: Momentum(Vec2 { x: rng.gen_range(AVOIDEE_MOMENTUM_RANGE), y: rng.gen_range(AVOIDEE_MOMENTUM_RANGE)}),
             collider: Collider::Circle { radius: 10. },
             ..Default::default()
         },
         ..Default::default()
-    });
+    }));
 }
 
 fn spawn_avoider(
@@ -65,7 +94,10 @@ fn spawn_avoider(
     mut materials: ResMut<Assets<ColorMaterial>>,
 ){
     info!("Spawning avoider");
-    commands.spawn(bundles::Avoider{
+    commands.spawn((
+        ResetMarker,
+        Player,
+        bundles::Avoider{
         mesh: MaterialMesh2dBundle{
             mesh: meshes.add(shape::Circle::new(10.).into()).into(),
             material: materials.add(ColorMaterial::from(Color::BLUE)),
@@ -81,7 +113,7 @@ fn spawn_avoider(
             ..Default::default()
         },
         ..Default::default()
-    });
+    }));
 }
 
 fn loop_space(
@@ -95,7 +127,7 @@ fn loop_space(
     }
 }
 
-fn rest_score(mut score: ResMut<Score>){
+fn reset_score(mut score: ResMut<Score>){
     score.0.reset();
     score.0.unpause();
 }
@@ -105,6 +137,7 @@ pub struct ScoreText;
 
 fn spawn_score_text(mut commands: Commands){
     commands.spawn((
+        ResetMarker,
         ScoreText,
         // Create a TextBundle that has a Text with a single section.
         TextBundle::from_section(

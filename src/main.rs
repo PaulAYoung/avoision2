@@ -1,12 +1,14 @@
 use bevy::{
     prelude::*,
-    diagnostic::{LogDiagnosticsPlugin, FrameTimeDiagnosticsPlugin}
 };
+
+// game state modules
+mod in_game;
+mod menu;
+mod game_over;
 
 mod bundles;
 mod components;
-mod in_game;
-mod menu;
 mod systems;
 mod physics;
 
@@ -25,8 +27,8 @@ fn setup(mut commands: Commands){
 }
 
 mod constants {
-    pub const SCREEN_HEIGHT:f32 = 300.;
-    pub const SCREEN_WIDTH:f32 = 300.;
+    pub const SCREEN_HEIGHT:f32 = 600.;
+    pub const SCREEN_WIDTH:f32 = 600.;
 }
 
 fn main() {
@@ -50,6 +52,7 @@ fn main() {
             in_game::InGame,
             menu::Menu,
             systems::physics::PhysicsPlugin,
+            game_over::GameOver,
         ))
         .run();
 }
