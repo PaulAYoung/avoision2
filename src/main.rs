@@ -16,6 +16,7 @@ enum GameState{
     #[default]
     Menu,
     Pause,
+    GameOver
 }
 
 fn setup(mut commands: Commands){
@@ -47,7 +48,8 @@ fn main() {
         )
         .add_plugins((
             in_game::InGame,
-            menu::Menu
+            menu::Menu,
+            systems::physics::PhysicsPlugin,
         ))
         .run();
 }

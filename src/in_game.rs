@@ -1,6 +1,6 @@
-use bevy::{prelude::*, sprite::MaterialMesh2dBundle, time::Stopwatch};
+use bevy::{prelude::*, sprite::{MaterialMesh2dBundle, collide_aabb::Collision}, time::Stopwatch};
 
-use crate::{bundles::{self, PhysEntity}, components::{Momentum, Collider}, systems::physics::collisions};
+use crate::{bundles::{self, PhysEntity}, components::{Momentum, Collider, Avoidee}, systems::physics::{collisions, CollisionEvent}};
 use crate::GameState;
 use crate::systems;
 use crate::constants::{SCREEN_HEIGHT, SCREEN_WIDTH};
@@ -31,6 +31,7 @@ impl Plugin for InGame {
                 loop_space,
                 collisions,
                 update_score,
+                game_over_check,
             ).run_if(in_state(GameState::InGame))
         );
     }
@@ -126,4 +127,18 @@ fn update_score(
     score.0.tick(time.delta());
     let mut score_text = query.get_single_mut().expect("Did not find score text.");
     score_text.sections[0].value = format!("Score: {}", score.0.elapsed().as_secs().to_string());
+}
+
+fn game_over_check(
+    query: Query<Entity, With<Avoidee>>,
+    mut collision_events: EventReader<CollisionEvent>,
+    mut next_state: ResMut<NextState<GameState>>
+){
+    let player_entity = query.single();
+
+    for event in collision_events.read() {
+        if (event.entity1 == player_entity || event.entity2 == player_entity){
+            next_state.set(GameState::GameOver);
+        }
+    }
 }
