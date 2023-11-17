@@ -5,7 +5,7 @@ use crate::components;
 const THRUST:f32 = 10.;
 
 pub fn player_controls(
-    mut query: Query<&mut components::Momentum, With<components::Avoider>>,
+    mut query: Query<&mut components::Momentum, With<components::Player>>,
     time: Res<Time>,
     keys: Res<Input<KeyCode>>
 ){
