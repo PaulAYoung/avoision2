@@ -3,6 +3,9 @@ use bevy::prelude::{
     Vec2, Deref, DerefMut
 };
 
+#[derive(Component)]
+pub struct ResetMarker;
+
 #[derive(Component, Default)]
 pub struct Player;
 
