@@ -12,7 +12,7 @@ use crate::constants::{SCREEN_HEIGHT, SCREEN_WIDTH};
 
 const AVOIDEE_POS_RANGE_X: Range<f32> = (SCREEN_WIDTH/4.)..(SCREEN_WIDTH/2.);
 const AVOIDEE_POS_RANGE_Y: Range<f32> = (SCREEN_HEIGHT/4.)..(SCREEN_HEIGHT/2.);
-const AVOIDEE_MOMENTUM_RANGE: Range<f32> = (-50.)..(50.);
+const AVOIDEE_MOMENTUM_RANGE: Range<f32> = (-100.)..(100.);
 const ONE_NEG_ONE: [f32; 2] = [1., -1.];
 pub struct InGame;
 

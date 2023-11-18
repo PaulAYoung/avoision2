@@ -2,7 +2,7 @@ use bevy::prelude::*;
 
 use crate::components;
 
-const THRUST:f32 = 10.;
+const THRUST:f32 = 20.;
 
 pub fn player_controls(
     mut query: Query<&mut components::Momentum, With<components::Player>>,
