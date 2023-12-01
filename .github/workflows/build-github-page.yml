@@ -50,10 +50,6 @@ jobs:
             - name: Build WASM artifact to _site/
               run: make build-wasm
 
-            - name: Copy assets to static folder
-              run: |
-                  cp -r $GITHUB_WORKSPACE/assets/ _site/assets
-
             - name: Setup Pages
               uses: actions/configure-pages@v2
 
