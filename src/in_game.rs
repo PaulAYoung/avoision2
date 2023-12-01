@@ -48,6 +48,7 @@ impl Plugin for InGame {
                 systems::physics::apply_momentum,
                 systems::controls::player_controls_keyboard,
                 systems::controls::player_controls_mouse,
+                systems::controls::player_controls_touch,
                 loop_space,
                 collisions,
                 update_score,
