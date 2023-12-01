@@ -34,14 +34,14 @@ fn game_over_text(mut commands: Commands, score: Res<Score>,
                 },
             ),
             TextSection::new(
-                format!("Score: {}\n", score.0.elapsed().as_secs()),
+                format!("Score: {}", score.0.elapsed().as_secs()),
                 TextStyle {
                     font_size: 40.0,
                     ..default()
                 },
             ),
             TextSection::new(
-                "Press Space to Try Again",
+                "\n\n\nSpace, click, or tap to try again",
                 TextStyle {
                     font_size: 20.0,
                     ..default()
@@ -52,12 +52,17 @@ fn game_over_text(mut commands: Commands, score: Res<Score>,
 }
 
 fn restart_game_on_space(
-    keys: Res<Input<KeyCode>>,
-    mut next_state: ResMut<NextState<GameState>>,
     mut commands: Commands,
-    query: Query<Entity, With<ResetMarker>>
+    query: Query<Entity, With<ResetMarker>>,
+    keys: Res<Input<KeyCode>>,
+    click: Res<Input<MouseButton>>,
+    touches: Res<Touches>,
+    mut next_state: ResMut<NextState<GameState>>
 ){
-    if keys.pressed(KeyCode::Space){
+    if keys.pressed(KeyCode::Space)
+        || click.just_released(MouseButton::Left)
+        || touches.any_just_pressed()
+    {
         next_state.set(GameState::InGame);
 
         for e in query.iter(){

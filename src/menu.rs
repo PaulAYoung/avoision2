@@ -15,7 +15,7 @@ impl Plugin for Menu {
             )
         )
         .add_systems(Update, (
-            start_game_on_space
+            start_game
         ).run_if(in_state(GameState::Menu)))
         .add_systems(OnExit(GameState::Menu),
             exit_menu
@@ -28,23 +28,50 @@ fn spawn_menu_text(mut commands: Commands){
     commands.spawn((
         MenuEntity,
         // Create a TextBundle that has a Text with a single section.
-        TextBundle::from_section(
-            // Accepts a `String` or any type that converts into a `String`, such as `&str`
-            "Avoision 2",
-            TextStyle {
-                // This font is loaded and will be used instead of the default font.
-                font_size: 100.0,
-                ..default()
-            },
-        )
+        TextBundle::from_sections([
+            TextSection::new(
+                "Avoision 2",
+                TextStyle {
+                    font_size: 100.0,
+                    ..default()
+                }
+            ),
+            TextSection::new(
+                "\n\n\nAvoid the red balls! How long can you survive?",
+                TextStyle {
+                    font_size: 20.0,
+                    ..default()
+                }
+            ),
+            TextSection::new(
+                "\n\n\nUse arrows keys, mouse, or touch screen to control.",
+                TextStyle {
+                    font_size: 20.0,
+                    ..default()
+                }
+            ),
+            TextSection::new(
+                "\n\n\nSpace, click, or tap to begin!",
+                TextStyle {
+                    // This font is loaded and will be used instead of the default font.
+                    font_size: 20.0,
+                    ..default()
+                }
+            ),
+        ])
     ));
 }
 
-fn start_game_on_space(
+fn start_game(
     keys: Res<Input<KeyCode>>,
+    click: Res<Input<MouseButton>>,
+    touches: Res<Touches>,
     mut next_state: ResMut<NextState<GameState>>
 ){
-    if keys.pressed(KeyCode::Space){
+    if keys.pressed(KeyCode::Space)
+        || click.just_released(MouseButton::Left)
+        || touches.any_just_pressed()
+    {
         next_state.set(GameState::InGame);
     }
 }
