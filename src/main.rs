@@ -22,7 +22,7 @@ enum GameState{
 }
 
 fn setup(mut commands: Commands){
-    info!("In setup");
+   //info!("In setup");
     commands.spawn(Camera2dBundle::default());
 }
 

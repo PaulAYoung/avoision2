@@ -65,7 +65,7 @@ fn spawn_avoidee(
     mut materials: ResMut<Assets<ColorMaterial>>,
     query: Query<&Transform, With<Player>>,
 ){
-    info!("Spawn avoidee");
+    //info!("Spawn avoidee");
     let mut rng = rand::thread_rng();
     let t_mod = Vec3 {
         x: rng.gen_range(AVOIDEE_POS_RANGE_X) * ONE_NEG_ONE.choose(&mut rng).unwrap(),
@@ -118,7 +118,7 @@ fn spawn_avoider(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
 ){
-    info!("Spawning avoider");
+   //info!("Spawning avoider");
     commands.spawn((
         ResetMarker,
         Player,
