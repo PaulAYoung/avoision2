@@ -1,0 +1,69 @@
+# This is a basic workflow to help you get started with Actions
+# This was copied from https://github.com/LarsDu/StarRust/blob/main/.github/workflows/deploy-pages.yml
+
+name: CI Publish WASM to Pages
+
+# Controls when the workflow will run
+on:
+    # Triggers the workflow on push or pull request events but only for the "main" branch
+    push:
+        branches: ["main"]
+        paths-ignore:
+            - "*.md"
+            - "docs/**"
+            - ".github/**"
+            - "blend/**"
+            - "Makefile"
+    pull_request:
+        branches: ["main"]
+
+    # Allows you to run this workflow manually from the Actions tab
+    workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+    # This workflow contains a single job called "build"
+    build-deploy:
+        # The type of runner that the job will run on
+        runs-on: ubuntu-latest
+        # Deploy to the github-pages environment
+        environment:
+            name: github-pages
+            url: ${{ steps.deployment.outputs.page_url }}
+
+        # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
+        permissions:
+            pages: write # to deploy to Pages
+            id-token: write # to verify the deployment originates from an appropriate source
+        # Steps represent a sequence of tasks that will be executed as part of the job
+        steps:
+            # Runs a single command using the runners shell
+
+            - name: Checkout
+              uses: actions/checkout@v3
+
+            - name: Setup Rust toolchain
+              uses: hecrj/setup-rust-action@v1.4.1
+              with:
+                rust-version: stable
+
+            - name: Build WASM artifact to _site/
+              run: make build-wasm
+
+            - name: Copy assets to static folder
+              run: |
+                  cp -r $GITHUB_WORKSPACE/assets/ _site/assets
+
+            - name: Setup Pages
+              uses: actions/configure-pages@v2
+
+            - name: Upload GitHub Pages artifact
+              uses: actions/upload-pages-artifact@v1.0.4
+              with:
+                  # Path of the directory containing the static assets.
+                  path: _site/
+                  # Duration after which artifact will expire in days.
+                  retention-days: 30
+
+            - name: Deploy GitHub Pages site
+              uses: actions/deploy-pages@v1
